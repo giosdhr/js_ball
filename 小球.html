@@ -1,0 +1,95 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset=utf-8>
+<title>小球撞击</title>
+<style>
+* {margin:0; padding:0; }
+#body { width:400px; height:400px; margin:100px auto; border:1px solid green; position:relative; }
+#img { position:absolute; }
+#line { width:40px; height:1px; background:red; position:absolute; }
+#hiddenResult { width:300px; height:200px; background:#b4b4b4; position:absolute; left:200px; top:100px; }
+.result { position:absolute; top:50px; left:120px; }
+.button1 { position:absolute; top:100px; left:80px; }
+.button2 { position:absolute; top:100px; left:160px; }
+</style>
+</head>
+<body id="body" onkeydown="control()">
+<div>
+	<img id="img" src="addbuddy.gif" />
+</div>
+<div id="line" style="top:350px; left:40px;"></div>
+<div id="hiddenResult" style="display:none;">
+	<strong class="result">游戏失败!</strong><br/><br/>
+	<input class="button1" type="button" value="重新开始" onclick="restart()" /> <br/><br/>
+	<input class="button2" type="button" value="退出游戏" onclick="remove()">
+</div>
+</body>
+<script type="text/javascript">
+
+function getId(id){
+	return document.getElementById(id);
+}
+function getpos(){
+	var pos = getId("line").style.left;
+	pos = pos.substring(0,pos.length-2);
+	pos = parseInt(pos);
+	return pos;
+}
+function restart(){
+	window.location.reload();
+}
+function remove(){
+	window.close();
+}
+
+function control(){
+	switch(window.event.keyCode){
+		case 37:       //左键  
+			var left = getpos();
+			if(left >= 40){
+				getId("line").style.left = (left-40)+"px";
+			}
+			break;
+		case 39:       //右键   
+			var right = getpos();
+			if(right <= 320){
+				getId("line").style.left = (right+40)+"px";
+			}
+			break;
+	}
+}
+
+function ball(){
+	this.speed = 5;     //速度
+	this.aX = 1.5*this.speed;  //x方向的加速度
+	this.aY = this.speed;  //y方向的加速度
+	this.x = 10;            //x方向的坐标
+	this.y = 10;            //y方向的坐标
+}
+var ball1 = new ball();
+
+ball1.move = function move(){
+	if(this.x+getId("img").offsetWidth >= document.body.clientWidth || this.x <= 0){
+		this.aX = -this.aX;
+	}
+	if(this.y+getId("img").offsetHeight >= document.body.clientHeight || this.y <= 0){
+		this.aY = -this.aY;
+	}
+	if(this.x >= getpos() && this.x <= getpos()+40){             //墙判断
+		if(this.y === 345){
+			this.aY = -this.aY;
+		}
+	} 
+	if(this.y > 350){                                          //失败判断
+		getId("hiddenResult").style.display="block";
+		clearInterval(mytime);
+	}
+	this.x += this.aX;
+	this.y += this.aY;
+	getId("img").style.left = this.x+"px";
+	getId("img").style.top = this.y+"px";
+}
+var mytime = setInterval("ball1.move()",100);
+</script>
+</html>
